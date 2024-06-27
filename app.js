@@ -7,19 +7,21 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var productsRouter = require('./routes/products');
+var categoriesRouter = require('./routes/categories');
+var authRouter = require('./routes/auth');
 
-// data model
 var sequelize = require('./models/index');
 var Category = require('./models/category');
 var Supplier = require('./models/supplier');
-var products = require('./models/products');
+var Product = require('./models/product');
 
-var Shipper = require('./models/shipper');
 var Customer = require('./models/customer');
 var Employee = require('./models/employee');
+var Shipper = require('./models/shipper');
 var Order = require('./models/order');
 
-var OrderDetail = require('./models/OrderDetail');
+var OrderDetails = require('./models/orderdetails');
+var User = require('./models/user')
 
 var app = express();
 
@@ -33,9 +35,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/uploads', express.static('uploads'));
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/products', productsRouter);
+app.use('/categories', categoriesRouter);
+app.use('/auth', authRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -44,19 +50,21 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
 
-// Sinkronkan model dengan database
 sequelize.sync()
-    .then(() => {
-        console.log('Database synchronized');
-    })
-    .catch(err => {
-        console.error('Error synchronizing database:', err);
-    });
+  .then(() => {
+    console.log('Database synchronized');
+  })
+  .catch(err => {
+    console.error('Error synchronizing database:', err);
+  });
 
 module.exports = app;

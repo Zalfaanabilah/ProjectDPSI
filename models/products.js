@@ -9,13 +9,17 @@ const Product = sequelize.define('Product', {
         autoIncrement: true,
         primaryKey: true
     },
-     productName: {
+    productName: {
         type: DataTypes.STRING,
         allowNull: false
     },
     supplierID: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: Supplier,
+            key: 'supplierID'
+        }
     },
     categoryID: {
         type: DataTypes.INTEGER,
@@ -25,14 +29,6 @@ const Product = sequelize.define('Product', {
             key: 'categoryID'
         }
     },
-    supplierID:{
-        type: DataTypes.INTEGER,
-        allowNull:false,
-        references:{
-            model: Supplier,
-            key:'supplierID'
-        }
-    },   
     unit: {
         type: DataTypes.STRING,
         allowNull: true
@@ -44,13 +40,12 @@ const Product = sequelize.define('Product', {
 }, {
     timestamps: false
 });
+
 // Definisikan relasi antara Product dan Category
 Product.belongsTo(Category, { foreignKey: 'categoryID' });
 Category.hasMany(Product, { foreignKey: 'categoryID' });
 
-
-//relasi produk dan supplier
-Product.belongsTo(Supplier, {foreignKey:'supplierID'});
-Supplier.hasMany(Product, {foreignKey:'supplierID'});
+Product.belongsTo(Supplier, { foreignKey: 'supplierID' });
+Category.hasMany(Product, { foreignKey: 'supplierID' });
 
 module.exports = Product;
